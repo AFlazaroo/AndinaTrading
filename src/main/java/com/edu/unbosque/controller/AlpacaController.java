@@ -41,4 +41,10 @@ public class AlpacaController {
         return alpacaService.getOpenPositions();
     }
 
+
+    @GetMapping("/assets")
+    public String getAssets() {
+        return alpacaService.getAvailableAssets();
+    }
+
 }

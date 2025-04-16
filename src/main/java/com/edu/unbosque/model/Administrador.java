@@ -7,10 +7,7 @@ import lombok.Data;
 @Entity
 @Table(name = "administrador")
 @Data
-public class Administrador {
+public class Administrador extends Usuario{
 
-    @Id
-    @OneToOne
-    @JoinColumn(name = "id_usuario")
-    private Usuario usuario; // Relación uno a uno con Usuario
+
 }

@@ -6,12 +6,7 @@ import lombok.Data;
 @Entity
 @Table(name = "trader")
 @Data
-public class Trader {
-
-    @Id
-    @OneToOne
-    @JoinColumn(name = "id_usuario")
-    private Usuario usuario; // Relación uno a uno con Usuario
+public class Trader extends Usuario {
 
     private Integer experiencia;
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "usuario")
 @Data
+@Inheritance(strategy = InheritanceType.JOINED)  // Esta anotación indica que se usará una tabla separada para cada clase
 public class Usuario implements UserDetails {
 
     @Id
@@ -34,6 +35,8 @@ public class Usuario implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(rol.name()));
     }
+
+
 
     @Override
     public String getPassword() {

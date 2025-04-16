@@ -92,4 +92,13 @@ public class AlpacaService {
         return headers;
     }
 
+
+    public String getAvailableAssets() {
+        String url = BASE_URL + "/assets?status=active&class=us_equity";
+        HttpHeaders headers = buildHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        return response.getBody();
+    }
+
 }
