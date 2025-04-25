@@ -16,8 +16,8 @@ public class Accion {
     @Column(name = "ticket")
     private String ticket;
 
-
-    private String nombre_compania;
+    @Column(name = "nombre_compania")
+    private String nombreCompania;
 
     @Column(name = "sector")
     private String sector;

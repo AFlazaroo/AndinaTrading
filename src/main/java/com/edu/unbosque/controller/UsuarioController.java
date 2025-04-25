@@ -93,7 +93,7 @@ public class UsuarioController {
         try {
             Accion nuevaAccion = new Accion();
             nuevaAccion.setTicket("AAPL");
-            nuevaAccion.setNombre_compania("Apple Inc.");
+            nuevaAccion.setNombreCompania("Apple Inc.");
             nuevaAccion.setSector("Tecnología");
             nuevaAccion.setPrecioActual(150.0);
             nuevaAccion.setVolumen(1000000);
