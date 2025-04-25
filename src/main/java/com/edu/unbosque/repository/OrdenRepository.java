@@ -1,10 +1,9 @@
 package com.edu.unbosque.repository;
 
+import com.edu.unbosque.model.Orden;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TraderRepository extends JpaRepository<Trader, Integer> {
-
-
+public interface OrdenRepository extends JpaRepository<Orden, Integer> {
 }

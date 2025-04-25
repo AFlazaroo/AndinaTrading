@@ -1,5 +1,7 @@
 package com.edu.unbosque.service;
 
+import com.edu.unbosque.model.Orden;
+import com.edu.unbosque.repository.OrdenRepository;
 import org.springframework.http.*;
 
 import com.edu.unbosque.model.Accion;
@@ -27,6 +29,9 @@ public class AlpacaService {
 
     @Autowired
     private AccionRepository accionRepository;
+
+    @Autowired
+    private OrdenRepository ordenRepository;
 
     @Value("${alpaca.api.key}")
     private String apiKey;
@@ -118,18 +123,18 @@ public class AlpacaService {
     }
 
 
-    public boolean crearAlerta(int id_usuario, int id_accion, String tipoAlerta, double valorObjetivo, String canal) {
+    public boolean crearAlerta(int id_usuario, int id_orden, String tipoAlerta, double valorObjetivo, String canal) {
         try {
             Optional<Usuario> usuarioOpt = usuarioRepository.findById(id_usuario);
-            Optional<Accion> accionOpt = accionRepository.findById(id_accion);
+            Optional<Orden> ordenOpt = ordenRepository.findById(id_orden);
 
             if (usuarioOpt.isEmpty()) {
                 System.out.println("❌ Usuario no encontrado con ID: " + id_usuario);
                 return false;
             }
 
-            if (accionOpt.isEmpty()) {
-                System.out.println("❌ Acción no encontrada con ID: " + id_accion);
+            if (ordenOpt.isEmpty()) {
+                System.out.println("❌ Acción no encontrada con ID: " + id_orden);
                 return false;
             }
 
@@ -137,9 +142,9 @@ public class AlpacaService {
             notificacion.setTipoAlerta(tipoAlerta);
             notificacion.setValorObjetivo(valorObjetivo);
             notificacion.setCanal(canal);
-            notificacion.setActiva(true);
+            notificacion.setEstado(true);
             notificacion.setUsuario(usuarioOpt.get());
-            notificacion.setAccion(accionOpt.get());
+            notificacion.setOrden(ordenOpt.get());
 
             System.out.println("✅ Guardando notificación: " + notificacion);
 
