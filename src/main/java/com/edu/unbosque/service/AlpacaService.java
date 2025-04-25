@@ -1,16 +1,32 @@
 package com.edu.unbosque.service;
 
+import org.springframework.http.*;
 
+import com.edu.unbosque.model.Accion;
+import com.edu.unbosque.model.Notificacion;
+import com.edu.unbosque.model.Usuario;
+import com.edu.unbosque.repository.AccionRepository;
+import com.edu.unbosque.repository.NotificacionRepository;
+import com.edu.unbosque.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+
 
 @Service
 public class AlpacaService {
+
+    @Autowired
+    private NotificacionRepository notificacionRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private AccionRepository accionRepository;
 
     @Value("${alpaca.api.key}")
     private String apiKey;
@@ -63,19 +79,19 @@ public class AlpacaService {
                 + "\"side\":\"buy\","
                 + "\"type\":\"limit\","
                 + "\"time_in_force\":\"gtc\","
-                + "\"limit_price\":\"" + price + "\""
+                + "\"limit_price\":" + price
                 + "}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("APCA-API-KEY-ID", apiKey);
         headers.set("APCA-API-SECRET-KEY", apiSecret);
+        headers.setContentType(MediaType.APPLICATION_JSON); // <-- ESTA LÍNEA ES CLAVE
 
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-        return response.getBody();  // Devuelve la respuesta de la orden
+        return response.getBody();
     }
-
 
     public String getOpenPositions() {
         String url = BASE_URL + "/positions";
@@ -100,5 +116,42 @@ public class AlpacaService {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
         return response.getBody();
     }
+
+
+    public boolean crearAlerta(int id_usuario, int id_accion, String tipoAlerta, double valorObjetivo, String canal) {
+        try {
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(id_usuario);
+            Optional<Accion> accionOpt = accionRepository.findById(id_accion);
+
+            if (usuarioOpt.isEmpty()) {
+                System.out.println("❌ Usuario no encontrado con ID: " + id_usuario);
+                return false;
+            }
+
+            if (accionOpt.isEmpty()) {
+                System.out.println("❌ Acción no encontrada con ID: " + id_accion);
+                return false;
+            }
+
+            Notificacion notificacion = new Notificacion();
+            notificacion.setTipoAlerta(tipoAlerta);
+            notificacion.setValorObjetivo(valorObjetivo);
+            notificacion.setCanal(canal);
+            notificacion.setActiva(true);
+            notificacion.setUsuario(usuarioOpt.get());
+            notificacion.setAccion(accionOpt.get());
+
+            System.out.println("✅ Guardando notificación: " + notificacion);
+
+            notificacionRepository.save(notificacion);
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("❌ ERROR AL CREAR ALERTA");
+            e.printStackTrace(); // Esto imprime el error real
+            throw new RuntimeException("Error al crear la alerta", e); // Para ver el 500 en detalle
+        }
+    }
+
 
 }

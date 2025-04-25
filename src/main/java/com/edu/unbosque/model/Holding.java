@@ -3,6 +3,8 @@ package com.edu.unbosque.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "holding")
 @Data
@@ -10,18 +12,14 @@ public class Holding {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idHolding;
+    private Integer id_holding;
 
-    private String fechaCompra;
-    private Double precioCompra;
-    private Double precioActual;
-    private Integer numeroAcciones;
+    private LocalDateTime fecha_compra;
+    private Double precio_compra;
+    private Double precio_actual;
+    private int cantidad;
 
     @ManyToOne
     @JoinColumn(name = "id_portafolio")
     private Portafolio portafolio;
-
-    @ManyToOne
-    @JoinColumn(name = "id_accion")
-    private Accion accion;
 }

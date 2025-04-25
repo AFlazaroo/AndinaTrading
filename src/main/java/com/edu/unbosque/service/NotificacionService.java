@@ -6,6 +6,13 @@ import com.edu.unbosque.repository.NotificacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.edu.unbosque.model.Notificacion;
+import com.edu.unbosque.model.Usuario;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,57 +20,53 @@ import java.util.Optional;
 public class NotificacionService {
 /*
     @Autowired
-    private NotificacionRepository notificacionRepository;
+    private JavaMailSender mailSender;
 
-    // Crear una nueva notificación
-    public Notificacion crearNotificacion(Notificacion notificacion) {
-        return notificacionRepository.save(notificacion);
-    }
-
-    // Activar una notificación
-    public Notificacion activarNotificacion(Integer id) {
-        Optional<Notificacion> notificacionOpt = notificacionRepository.findById(id);
-        if (notificacionOpt.isPresent()) {
-            Notificacion notificacion = notificacionOpt.get();
-            notificacion.setActiva(true);
-            return notificacionRepository.save(notificacion);
-        } else {
-            throw new RuntimeException("Notificación no encontrada");
+    public void enviarNotificacion(String canal, String destino, String mensaje) {
+        switch (canal.toLowerCase()) {
+            case "email":
+                enviarEmail(destino, mensaje);
+                break;
+            case "sms":
+                enviarSms(destino, mensaje);
+                break;
+            case "whatsapp":
+                enviarWhatsApp(destino, mensaje);
+                break;
+            default:
+                throw new IllegalArgumentException("Canal de notificación no válido: " + canal);
         }
     }
 
-    // Desactivar una notificación
-    public Notificacion desactivarNotificacion(Integer id) {
-        Optional<Notificacion> notificacionOpt = notificacionRepository.findById(id);
-        if (notificacionOpt.isPresent()) {
-            Notificacion notificacion = notificacionOpt.get();
-            notificacion.setActiva(false);
-            return notificacionRepository.save(notificacion);
-        } else {
-            throw new RuntimeException("Notificación no encontrada");
+    // Enviar notificación por Email
+    private void enviarEmail(String destino, String mensaje) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(destino); // Dirección de correo electrónico
+            helper.setSubject("Notificación importante");
+            helper.setText(mensaje); // Mensaje de la notificación
+
+            mailSender.send(message); // Enviar el correo
+            System.out.println("Correo enviado a: " + destino);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Aquí podrías manejar el error de forma más detallada
         }
     }
 
-    // Obtener todas las notificaciones activas para un usuario
-    public List<Notificacion> obtenerNotificacionesPorUsuario(Integer usuarioId) {
-        return notificacionRepository.findByUsuarioId(usuarioId);
+    // Enviar notificación por SMS (simulado)
+    private void enviarSms(String destino, String mensaje) {
+        // Simulamos el envío de un SMS (esto debería integrarse con un servicio real como Twilio)
+        System.out.println("Enviando SMS a " + destino + ": " + mensaje);
     }
 
-    // Verificar si un precio ha alcanzado el valor objetivo para enviar la notificación
-    public void verificarNotificaciones(Double precioAccion, Integer usuarioId) {
-        List<Notificacion> notificaciones = notificacionRepository.findByUsuarioId(usuarioId);
-        for (Notificacion notificacion : notificaciones) {
-            if (notificacion.getValorObjetivo() <= precioAccion && notificacion.getActiva()) {
-                enviarNotificacion(notificacion);
-            }
-        }
+    // Enviar notificación por WhatsApp (simulado)
+    private void enviarWhatsApp(String destino, String mensaje) {
+        // Simulamos el envío de un WhatsApp (esto debería integrarse con un servicio real como WhatsApp Business API)
+        System.out.println("Enviando WhatsApp a " + destino + ": " + mensaje);*/
+
+
     }
 
-    // Método simulado para enviar la notificación (puedes integrar correo, SMS, etc.)
-    private void enviarNotificacion(Notificacion notificacion) {
-        // Aquí podrías integrar un servicio real de notificaciones, como Email, SMS, o Push.
-        System.out.println("Enviando notificación a " + notificacion.getUsuario().getEmail() +
-                ": " + notificacion.getTipoAlerta());
 
- */
-    }

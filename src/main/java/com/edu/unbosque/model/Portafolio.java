@@ -4,6 +4,8 @@ package com.edu.unbosque.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "portafolio")
 @Data
@@ -11,11 +13,12 @@ public class Portafolio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idPortafolio;
+    private Integer id_portafolio;
 
-    private String fechaCreacion;
+    private LocalDate fecha_creacion;
 
     @OneToOne
-    @JoinColumn(name = "id_trader")
-    private Trader trader;
-}
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
+
+   }

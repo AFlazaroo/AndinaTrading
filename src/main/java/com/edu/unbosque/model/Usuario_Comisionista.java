@@ -7,16 +7,16 @@ import lombok.Data;
 @Entity
 @Table(name = "asesora")
 @Data
-public class Asesora {
+public class Usuario_Comisionista {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "id_trader")
-    private Trader trader;
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "id_comisionista")
     private Comisionista comisionista;
-}
 
+}

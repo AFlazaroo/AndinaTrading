@@ -4,6 +4,8 @@ package com.edu.unbosque.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "orden")
 @Data
@@ -11,25 +13,26 @@ public class Orden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idOrden;
+    private Integer id_orden;
 
-    private String tipoOrden;
-    private String fechaCreacion;
-    private String ultimaModificacion;
+    private String tipo_orden;
+    private LocalDateTime fecha_creacion;
+    private LocalDateTime  ultima_modificacion;
     private String estado;
     private Double precio;
     private Integer cantidad;
-    private String fechaEjecucion;
+    private LocalDateTime  fecha_ejecucion;
 
     @ManyToOne
-    @JoinColumn(name = "id_trader")
-    private Trader trader;
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "id_accion")
     private Accion accion;
 
-    @ManyToOne
-    @JoinColumn(name = "id_notificacion")
-    private Notificacion notificacion;
+    @OneToOne
+    @JoinColumn(name = "id_transaccion")
+    private Transaccion transaccion;
+
 }

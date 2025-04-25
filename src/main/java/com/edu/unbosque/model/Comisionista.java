@@ -7,8 +7,17 @@ import lombok.Data;
 @Entity
 @Table(name = "comisionista")
 @Data
-public class Comisionista extends Usuario {
+public class Comisionista {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_comisionista")
+    private Integer idComisionista;
 
-    private Integer experiencia;
+    private String nombre;
+    private String apellido;
+    private String email;
+    private String telefono;
+    private String password;
+    private boolean estado;
 }
