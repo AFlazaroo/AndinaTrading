@@ -17,6 +17,8 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
 
+    import java.util.List;
+    import java.util.Map;
     import java.util.Optional;
 
     @RestController
@@ -52,7 +54,7 @@
 
         // Endpoint para obtener la cotización de una acción
         @GetMapping("/quote/{symbol}")
-        public String getQuote(@PathVariable String symbol) {
+        public Map<String, Object> getQuote(@PathVariable String symbol) {
             return alpacaService.getStockQuote(symbol);
         }
 
@@ -110,8 +112,49 @@
             }
         }
 
-
+        // Endpoint para obtener datos de velas japonesas (historical candles)
+        @GetMapping("/historical/{symbol}/{timeFrame}")
+        public ResponseEntity<?> getHistoricalData(
+                @PathVariable String symbol,
+                @PathVariable String timeFrame,
+                @RequestParam String start,
+                @RequestParam String end) {
+            try {
+                List<Map<String, Object>> candles = alpacaService.getHistoricalCandles(symbol, timeFrame, start, end);
+                return ResponseEntity.ok(candles);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
         }
+        // Endpoint para orden tipo MARKET
+        @PostMapping("/order/market")
+        public String placeMarketOrder(
+                @RequestParam String symbol,
+                @RequestParam int qty,
+                @RequestParam String side) {
+            return alpacaService.placeMarketOrder(symbol, qty, side);
+        }
+
+        // Endpoint para orden tipo STOP LOSS
+        @PostMapping("/order/stoploss")
+        public String placeStopLossOrder(
+                @RequestParam String symbol,
+                @RequestParam int qty,
+                @RequestParam String side,
+                @RequestParam double stopPrice) {
+            return alpacaService.placeStopLossOrder(symbol, qty, side, stopPrice);
+        }
+
+        // Endpoint para orden tipo TAKE PROFIT
+        @PostMapping("/order/takeprofit")
+        public String placeTakeProfitOrder(
+                @RequestParam String symbol,
+                @RequestParam int qty,
+                @RequestParam String side,
+                @RequestParam double limitPrice) {
+            return alpacaService.placeTakeProfitOrder(symbol, qty, side, limitPrice);
+        }
+    }
                                             
 
 
