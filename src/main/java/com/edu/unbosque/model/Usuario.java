@@ -3,13 +3,15 @@ package com.edu.unbosque.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Table(name = "usuario")
 @Data
+@Getter
+@Setter
 public class Usuario {
 
     @Id
@@ -19,6 +21,7 @@ public class Usuario {
 
     private String nombre;
     private String apellido;
+
     private String email;
     private String telefono;
     private String password;

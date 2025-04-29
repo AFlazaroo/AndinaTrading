@@ -86,8 +86,6 @@ public class UsuarioController {
     }
 
 
-
-
     @PostMapping("/crear-accion-prueba")
     public ResponseEntity<String> crearAccionDePrueba() {
         try {
@@ -131,6 +129,31 @@ public class UsuarioController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la notificación.");
         }
+    }
+
+    @PostMapping("/crear-notificacion")
+    public ResponseEntity<String> ServicioLogeo() {
+        try {
+            Notificacion nueva = new Notificacion();
+            nueva.setTipoAlerta("mayor");
+            nueva.setValorObjetivo(150.0);
+            nueva.setCanal("email");
+            nueva.setEstado(true);
+            nueva.setUsuario(usuarioRepository.findById(1).get());  // Suponiendo que el usuario existe
+            nueva.setOrden(ordenRepository.findById(2).get());  // Suponiendo que la acción existe
+
+            notificacionRepository.save(nueva);
+            return ResponseEntity.ok("Notificación creada con ID: " + nueva.getId_notificacion());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la notificación.");
+        }
+    }
+
+    @GetMapping("/logeo")
+    public ResponseEntity<Usuario> sda(@RequestParam String email , @RequestParam String contrasena){
+
+        return null;
     }
 
 
