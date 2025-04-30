@@ -2,7 +2,9 @@ package com.edu.unbosque.controller;
 
 import com.edu.unbosque.model.*;
 import com.edu.unbosque.repository.*;
+import com.edu.unbosque.service.UsuarioService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @Autowired
     private NotificacionRepository notificacionRepository;
@@ -131,29 +136,15 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/crear-notificacion")
-    public ResponseEntity<String> ServicioLogeo() {
-        try {
-            Notificacion nueva = new Notificacion();
-            nueva.setTipoAlerta("mayor");
-            nueva.setValorObjetivo(150.0);
-            nueva.setCanal("email");
-            nueva.setEstado(true);
-            nueva.setUsuario(usuarioRepository.findById(1).get());  // Suponiendo que el usuario existe
-            nueva.setOrden(ordenRepository.findById(2).get());  // Suponiendo que la acción existe
+    @PostMapping("/registroUsuario")
+    public ResponseEntity<String> registroDeUsuario(@Valid @RequestBody Usuario usuario){
+        Optional<Usuario> usuarioGuardado = usuarioService.guardarUsuario(usuario);
 
-            notificacionRepository.save(nueva);
-            return ResponseEntity.ok("Notificación creada con ID: " + nueva.getId_notificacion());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la notificación.");
+        if (usuarioGuardado.isPresent()) {
+            return ResponseEntity.ok("Usuario registrado exitosamente.");
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
-    }
-
-    @GetMapping("/logeo")
-    public ResponseEntity<Usuario> sda(@RequestParam String email , @RequestParam String contrasena){
-
-        return null;
     }
 
 
