@@ -1,10 +1,8 @@
 package com.edu.unbosque.service;
 
-import com.edu.unbosque.model.Accion;
 import com.edu.unbosque.model.Notificacion;
 import com.edu.unbosque.model.Orden;
 import com.edu.unbosque.model.Usuario;
-import com.edu.unbosque.repository.AccionRepository;
 import com.edu.unbosque.repository.NotificacionRepository;
 import com.edu.unbosque.repository.OrdenRepository;
 import com.edu.unbosque.repository.UsuarioRepository;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.*;
 
 @Service
@@ -21,7 +18,6 @@ public class AlpacaService {
 
     @Autowired private NotificacionRepository notificacionRepository;
     @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private AccionRepository accionRepository;
     @Autowired private OrdenRepository ordenRepository;
 
     @Value("${alpaca.api.key}")
@@ -109,71 +105,7 @@ public class AlpacaService {
         return response.getBody();
     }
 
-    // === 4. Gestión de Órdenes ===
-    public String placeMarketOrder(String symbol, int qty, String side) {
-        String url = BASE_URL + "/orders";
-        String body = "{" +
-                "\"symbol\":\"" + symbol + "\"," +
-                "\"qty\":" + qty + "," +
-                "\"side\":\"" + side + "\"," +
-                "\"type\":\"market\"," +
-                "\"time_in_force\":\"gtc\"" +
-                "}";
-
-        HttpEntity<String> entity = new HttpEntity<>(body, buildHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-        return response.getBody();
-    }
-
-    public String placeBuyOrder(String symbol, int qty, double price) {
-        String url = BASE_URL + "/orders";
-        String body = "{" +
-                "\"symbol\":\"" + symbol + "\"," +
-                "\"qty\":" + qty + "," +
-                "\"side\":\"buy\"," +
-                "\"type\":\"limit\"," +
-                "\"time_in_force\":\"gtc\"," +
-                "\"limit_price\":" + price +
-                "}";
-
-        HttpEntity<String> entity = new HttpEntity<>(body, buildHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-        return response.getBody();
-    }
-
-    public String placeStopLossOrder(String symbol, int qty, String side, double stopPrice) {
-        String url = BASE_URL + "/orders";
-        String body = "{" +
-                "\"symbol\":\"" + symbol + "\"," +
-                "\"qty\":" + qty + "," +
-                "\"side\":\"" + side + "\"," +
-                "\"type\":\"stop\"," +
-                "\"time_in_force\":\"gtc\"," +
-                "\"stop_price\":" + stopPrice +
-                "}";
-
-        HttpEntity<String> entity = new HttpEntity<>(body, buildHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-        return response.getBody();
-    }
-
-    public String placeTakeProfitOrder(String symbol, int qty, String side, double limitPrice) {
-        String url = BASE_URL + "/orders";
-        String body = "{" +
-                "\"symbol\":\"" + symbol + "\"," +
-                "\"qty\":" + qty + "," +
-                "\"side\":\"" + side + "\"," +
-                "\"type\":\"limit\"," +
-                "\"time_in_force\":\"gtc\"," +
-                "\"limit_price\":" + limitPrice +
-                "}";
-
-        HttpEntity<String> entity = new HttpEntity<>(body, buildHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-        return response.getBody();
-    }
-
-    // === 5. Gestión de Alertas ===
+    // === 4. Gestión de Alertas ===
     public boolean crearAlerta(int id_usuario, int id_orden, String tipoAlerta, double valorObjetivo, String canal) {
         try {
             Optional<Usuario> usuarioOpt = usuarioRepository.findById(id_usuario);

@@ -5,15 +5,12 @@ import com.edu.unbosque.repository.NotificacionRepository;
 import com.edu.unbosque.repository.OrdenRepository;
 import com.edu.unbosque.repository.UsuarioRepository;
 import com.edu.unbosque.service.AlpacaService;
-import com.edu.unbosque.service.OrdenService;
 import com.edu.unbosque.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/alpaca")
@@ -24,19 +21,17 @@ public class AlpacaController {
     private final AccionRepository accionRepository;
     private final NotificacionRepository notificacionRepository;
     private final UsuarioService usuarioService;
-    private final OrdenService ordenService;
     private final OrdenRepository ordenRepository;
 
     @Autowired
     public AlpacaController(AlpacaService alpacaService, UsuarioRepository usuarioRepository,
                             AccionRepository accionRepository, NotificacionRepository notificacionRepository,
-                            UsuarioService usuarioService, OrdenService ordenService, OrdenRepository ordenRepository) {
+                            UsuarioService usuarioService, OrdenRepository ordenRepository) {
         this.alpacaService = alpacaService;
         this.usuarioRepository = usuarioRepository;
         this.accionRepository = accionRepository;
         this.notificacionRepository = notificacionRepository;
         this.usuarioService = usuarioService;
-        this.ordenService = ordenService;
         this.ordenRepository = ordenRepository;
     }
 
@@ -73,30 +68,7 @@ public class AlpacaController {
         return alpacaService.getOpenPositions();
     }
 
-    // === 4. Gestión de Órdenes ===
-    @PostMapping("/order/market")
-    public String placeMarketOrder(@RequestParam String symbol, @RequestParam int qty, @RequestParam String side) {
-        return alpacaService.placeMarketOrder(symbol, qty, side);
-    }
-
-    @PostMapping("/buy")
-    public String placeBuyOrder(@RequestParam String symbol, @RequestParam int qty, @RequestParam double price) {
-        return alpacaService.placeBuyOrder(symbol, qty, price);
-    }
-
-    @PostMapping("/order/stoploss")
-    public String placeStopLossOrder(@RequestParam String symbol, @RequestParam int qty,
-                                     @RequestParam String side, @RequestParam double stopPrice) {
-        return alpacaService.placeStopLossOrder(symbol, qty, side, stopPrice);
-    }
-
-    @PostMapping("/order/takeprofit")
-    public String placeTakeProfitOrder(@RequestParam String symbol, @RequestParam int qty,
-                                       @RequestParam String side, @RequestParam double limitPrice) {
-        return alpacaService.placeTakeProfitOrder(symbol, qty, side, limitPrice);
-    }
-
-    // === 5. Gestión de Alertas ===
+    // === 4. Gestión de Alertas ===
     @PostMapping("/alerta")
     public ResponseEntity<String> crearAlerta(@RequestParam int id_usuario, @RequestParam int id_orden,
                                               @RequestParam String tipoAlerta, @RequestParam double valorObjetivo,
