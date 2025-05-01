@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
@@ -257,4 +259,67 @@ public class AlpacaService {
 
         return response.getBody();
     }
+
+    public double extractPriceFromAlpacaResponse(String jsonResponse) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(jsonResponse);
+
+            // Verifica si existe el precio promedio de la orden
+            if (root.has("filled_avg_price") && !root.get("filled_avg_price").isNull()) {
+                return root.get("filled_avg_price").asDouble();
+            }
+
+            // Si la respuesta contiene un mensaje de error relacionado con el mercado cerrado, puede devolver un código específico
+            if (root.has("error")) {
+                String errorMessage = root.get("error").asText();
+                if (errorMessage.contains("market closed")) {
+                    return -2.0; // Usamos un código especial para indicar que el mercado está cerrado
+                }
+            }
+
+            // Si no existe o es null, devuelve un valor especial para indicar que no se obtuvo el precio
+            return -1.0; // Indicando que no se obtuvo el precio
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1.0; // Si hay un error en el procesamiento, devuelve -1.0
+        }
+    }
+
+    public double getPrecioActualDesdeAlpaca(String symbol) {
+        String url = MARKET_DATA_URL + "/stocks/" + symbol + "/quotes/latest";
+
+        HttpHeaders headers = buildHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            return root.path("quote").path("ap").asDouble(); // Puedes cambiarlo por "bp" o "p" si prefieres otro valor
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1.0;
+        }
+
+
+    }
+
+    public String convertirZonaAHorariaJava(String zona) {
+        if (zona.equals("Hora del Este de EE. UU.")) return "America/New_York";
+        if (zona.equals("Hora de Greenwich")) return "Europe/London";
+        if (zona.equals("Hora de Japón")) return "Asia/Tokyo";
+        if (zona.equals("Hora de Sídney")) return "Australia/Sydney";
+        throw new IllegalArgumentException("Zona horaria no soportada: " + zona);
+    }
+
+
+
+
+
+
+
 }

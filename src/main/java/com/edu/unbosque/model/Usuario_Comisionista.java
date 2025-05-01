@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "asesora")
+@Table(name = "Usuario_Comisionista")
+@IdClass(UsuarioComisionistaId.class)
 @Data
 public class Usuario_Comisionista {
 
@@ -18,5 +19,6 @@ public class Usuario_Comisionista {
     @ManyToOne
     @JoinColumn(name = "id_comisionista")
     private Comisionista comisionista;
+
 
 }
