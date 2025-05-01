@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.*;
 
 @Service
@@ -130,5 +133,118 @@ public class AlpacaService {
             e.printStackTrace();
             throw new RuntimeException("Error al crear la alerta", e);
         }
+    }
+
+    // === 5. Métodos de órdenes ===
+    public String placeMarketOrder(String symbol, int qty, String side) {
+        String url = BASE_URL + "/orders";
+
+        String body = "{"
+                + "\"symbol\":\"" + symbol + "\","
+                + "\"qty\":" + qty + ","
+                + "\"side\":\"" + side + "\","
+                + "\"type\":\"market\","
+                + "\"time_in_force\":\"gtc\""
+                + "}";
+
+        HttpHeaders headers = buildHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        return response.getBody();
+    }
+
+    public String placeStopLossOrder(String symbol, int qty, String side, double stopPrice) {
+        String url = BASE_URL + "/orders";
+
+        String body = "{"
+                + "\"symbol\":\"" + symbol + "\","
+                + "\"qty\":" + qty + ","
+                + "\"side\":\"" + side + "\","
+                + "\"type\":\"stop\","
+                + "\"time_in_force\":\"gtc\","
+                + "\"stop_price\":" + stopPrice
+                + "}";
+
+        HttpHeaders headers = buildHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        return response.getBody();
+    }
+
+    public String placeTakeProfitOrder(String symbol, int qty, String side, double limitPrice) {
+        String url = BASE_URL + "/orders";
+
+        String body = "{"
+                + "\"symbol\":\"" + symbol + "\","
+                + "\"qty\":" + qty + ","
+                + "\"side\":\"" + side + "\","
+                + "\"type\":\"limit\","
+                + "\"time_in_force\":\"gtc\","
+                + "\"limit_price\":" + limitPrice
+                + "}";
+
+        HttpHeaders headers = buildHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        return response.getBody();
+    }
+
+    public double extractPriceFromAlpacaResponse(String jsonResponse) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(jsonResponse);
+
+            if (root.has("filled_avg_price") && !root.get("filled_avg_price").isNull()) {
+                return root.get("filled_avg_price").asDouble();
+            }
+
+            if (root.has("error")) {
+                String errorMessage = root.get("error").asText();
+                if (errorMessage.contains("market closed")) {
+                    return -2.0;
+                }
+            }
+
+            return -1.0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1.0;
+        }
+    }
+
+    public double getPrecioActualDesdeAlpaca(String symbol) {
+        String url = MARKET_DATA_URL + "/stocks/" + symbol + "/quotes/latest";
+        HttpHeaders headers = buildHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            return root.path("quote").path("ap").asDouble();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1.0;
+        }
+    }
+
+    public String convertirZonaAHorariaJava(String zona) {
+        if (zona.equals("Hora del Este de EE. UU.")) return "America/New_York";
+        if (zona.equals("Hora de Greenwich")) return "Europe/London";
+        if (zona.equals("Hora de Japón")) return "Asia/Tokyo";
+        if (zona.equals("Hora de Sídney")) return "Australia/Sydney";
+        throw new IllegalArgumentException("Zona horaria no soportada: " + zona);
     }
 }

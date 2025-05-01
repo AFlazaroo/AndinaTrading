@@ -13,7 +13,9 @@ public class Orden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_orden;
+
+    @Column(name = "id_orden")
+    private Integer idOrden;
 
     private String tipo_orden;
     private LocalDateTime fecha_creacion;
@@ -34,5 +36,6 @@ public class Orden {
     @OneToOne
     @JoinColumn(name = "id_transaccion")
     private Transaccion transaccion;
+
 
 }

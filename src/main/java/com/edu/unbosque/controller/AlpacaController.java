@@ -1,16 +1,25 @@
 package com.edu.unbosque.controller;
 
-import com.edu.unbosque.repository.AccionRepository;
-import com.edu.unbosque.repository.NotificacionRepository;
-import com.edu.unbosque.repository.OrdenRepository;
-import com.edu.unbosque.repository.UsuarioRepository;
+import com.edu.unbosque.model.*;
+import com.edu.unbosque.repository.*;
 import com.edu.unbosque.service.AlpacaService;
+import com.edu.unbosque.service.OrdenService;
+import com.edu.unbosque.service.TransaccionService;
 import com.edu.unbosque.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/alpaca")
@@ -21,18 +30,27 @@ public class AlpacaController {
     private final AccionRepository accionRepository;
     private final NotificacionRepository notificacionRepository;
     private final UsuarioService usuarioService;
+    private final OrdenService ordenService;
     private final OrdenRepository ordenRepository;
+    private final TransaccionService transaccionService;
+    private final TransaccionRepository transaccionRepository;
+    private final MercadoRepository mercadoRepository;
 
     @Autowired
-    public AlpacaController(AlpacaService alpacaService, UsuarioRepository usuarioRepository,
-                            AccionRepository accionRepository, NotificacionRepository notificacionRepository,
-                            UsuarioService usuarioService, OrdenRepository ordenRepository) {
+    public AlpacaController(AlpacaService alpacaService, UsuarioRepository usuarioRepository, AccionRepository accionRepository,
+                            NotificacionRepository notificacionRepository, UsuarioService usuarioService, OrdenService ordenService,
+                            OrdenRepository ordenRepository, TransaccionService transaccionService, TransaccionRepository transaccionRepository,
+                            MercadoRepository mercadoRepository) {
         this.alpacaService = alpacaService;
         this.usuarioRepository = usuarioRepository;
         this.accionRepository = accionRepository;
         this.notificacionRepository = notificacionRepository;
         this.usuarioService = usuarioService;
+        this.ordenService = ordenService;
         this.ordenRepository = ordenRepository;
+        this.transaccionService = transaccionService;
+        this.transaccionRepository = transaccionRepository;
+        this.mercadoRepository = mercadoRepository;
     }
 
     // === 1. Balance y Activos ===
@@ -74,16 +92,86 @@ public class AlpacaController {
                                               @RequestParam String tipoAlerta, @RequestParam double valorObjetivo,
                                               @RequestParam String canal) {
         try {
-            if (usuarioRepository.findById(id_usuario).isEmpty())
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
-            if (ordenRepository.findById(id_orden).isEmpty())
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Orden no encontrada.");
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(id_usuario);
+            if (usuarioOpt.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
 
-            boolean creada = alpacaService.crearAlerta(id_usuario, id_orden, tipoAlerta, valorObjetivo, canal);
-            return creada ? ResponseEntity.ok("Alerta creada correctamente.") :
-                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo crear alerta.");
+            Optional<Orden> ordenOpt = ordenRepository.findById(id_orden);
+            if (ordenOpt.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Orden no encontrada.");
+
+            Notificacion notificacion = new Notificacion();
+            notificacion.setTipoAlerta(tipoAlerta);
+            notificacion.setValorObjetivo(valorObjetivo);
+            notificacion.setCanal(canal);
+            notificacion.setEstado(true);
+            notificacion.setUsuario(usuarioOpt.get());
+            notificacion.setOrden(ordenOpt.get());
+
+            notificacionRepository.save(notificacion);
+            return ResponseEntity.ok("Alerta creada correctamente.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno: " + e.getMessage());
+        }
+    }
+
+    // Endpoint para orden tipo MARKET
+    @PostMapping("/order/market")
+    public ResponseEntity<?> placeMarketOrder(@RequestParam String symbol, @RequestParam int qty,
+                                              @RequestParam String side, @RequestParam Integer idUsuario) {
+        try {
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(idUsuario);
+            if (usuarioOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+            }
+
+            Accion accion = accionRepository.findByTicket(symbol)
+                    .orElseThrow(() -> new RuntimeException("Acción no encontrada con ticket: " + symbol));
+
+            Mercado mercado = accion.getMercado();
+            double precioActual = alpacaService.getPrecioActualDesdeAlpaca(symbol);
+            if (precioActual <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se pudo obtener el precio actual del símbolo.");
+            }
+
+            accion.setPrecioActual(precioActual);
+            accionRepository.save(accion);
+
+            ZoneId zonaMercado = ZoneId.of(alpacaService.convertirZonaAHorariaJava(mercado.getZona_horario()));
+            ZonedDateTime ahoraEnMercado = ZonedDateTime.now(zonaMercado);
+            LocalTime horaActual = ahoraEnMercado.toLocalTime();
+
+            boolean dentroHorario = horaActual.isAfter(LocalTime.from(mercado.getHorario_apertura())) &&
+                    horaActual.isBefore(LocalTime.from(mercado.getHorario_cierre()));
+
+            Orden orden = new Orden();
+            orden.setAccion(accion);
+            orden.setUsuario(usuarioOpt.get());
+            orden.setCantidad(qty);
+            orden.setPrecio(precioActual);
+            orden.setTipo_orden("MARKET");
+            orden.setFecha_creacion(LocalDateTime.now());
+            orden.setUltima_modificacion(LocalDateTime.now());
+
+            if (dentroHorario) {
+                orden.setEstado("EJECUTADA");
+                orden.setFecha_ejecucion(LocalDateTime.now());
+            } else {
+                orden.setEstado("PENDIENTE");
+                orden.setFecha_ejecucion(null);
+            }
+
+            ordenRepository.save(orden);
+
+            if (dentroHorario) {
+                Transaccion transaccion = transaccionService.registrarTransaccion(orden);
+                orden.setTransaccion(transaccion);
+                ordenRepository.save(orden);
+            }
+
+            return ResponseEntity.ok("✅ Orden creada correctamente. Estado: " + orden.getEstado());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error al procesar la orden.");
         }
     }
 }

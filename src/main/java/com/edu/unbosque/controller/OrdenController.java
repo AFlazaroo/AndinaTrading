@@ -6,7 +6,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/ordenes")
 public class OrdenController {
 
     private final OrdenService ordenService;
@@ -16,7 +16,6 @@ public class OrdenController {
         this.ordenService = ordenService;
     }
 
-    // Orden de mercado: Ejecuta inmediatamente al precio actual del mercado
     @PostMapping("/market")
     public ResponseEntity<String> placeMarketOrder(
             @RequestParam String symbol,
@@ -32,7 +31,6 @@ public class OrdenController {
         }
     }
 
-    // Orden límite: Se ejecuta solo cuando el activo alcanza un precio específico o mejor
     @PostMapping("/limit")
     public ResponseEntity<String> placeLimitOrder(
             @RequestParam String symbol,
@@ -48,7 +46,6 @@ public class OrdenController {
         }
     }
 
-    // Orden stop-loss: Se convierte en orden de mercado cuando el precio cae a un nivel específico (protege contra pérdidas)
     @PostMapping("/stoploss")
     public ResponseEntity<String> placeStopLossOrder(
             @RequestParam String symbol,
@@ -65,7 +62,6 @@ public class OrdenController {
         }
     }
 
-    // Orden take-profit: Se convierte en orden límite cuando el precio alcanza un nivel de beneficio objetivo
     @PostMapping("/takeprofit")
     public ResponseEntity<String> placeTakeProfitOrder(
             @RequestParam String symbol,
@@ -82,7 +78,6 @@ public class OrdenController {
         }
     }
 
-    // Consulta el estado de una orden existente por su ID
     @GetMapping("/{orderId}")
     public ResponseEntity<String> getOrderById(@PathVariable String orderId) {
         try {
