@@ -1,5 +1,6 @@
 package com.edu.unbosque.controller;
 
+import com.edu.unbosque.config.TokenAdmin;
 import com.edu.unbosque.model.*;
 import com.edu.unbosque.repository.*;
 import com.edu.unbosque.service.UsuarioService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -18,6 +20,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private TokenAdmin tokenAdmin;
 
     @Autowired
     private NotificacionRepository notificacionRepository;
@@ -146,6 +151,30 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String contrasena = body.get("contrasena");
+
+        if (usuarioService.validarCredenciales(email, contrasena)) {
+            Optional<Usuario> usuarioOpt = usuarioService.encontrarUsuarioCorreo(email);
+            if (usuarioOpt.isPresent()) {
+
+                String id = usuarioOpt.get().getIdUsuario().toString();
+                String token = tokenAdmin.generarToken(id);
+
+                return ResponseEntity.ok(token);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+    }
+
+
+
+
 
 
 
