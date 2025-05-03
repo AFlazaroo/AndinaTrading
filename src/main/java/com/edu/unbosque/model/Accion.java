@@ -11,6 +11,7 @@ public class Accion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
+
     private Integer id_accion;
 
     @Column(name = "ticket")
@@ -32,6 +33,6 @@ public class Accion {
     private Double capitalizacionMercado;
 
     @ManyToOne
-    @JoinColumn(name = "id_mercado")
+    @JoinColumn(name = "id_mercado", nullable = false)
     private Mercado mercado;
 }

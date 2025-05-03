@@ -13,6 +13,8 @@ public class Transaccion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+
     private Integer id_transaccion;
 
     private Double comision_comisionista;
@@ -24,4 +26,9 @@ public class Transaccion {
     @OneToOne
     @JoinColumn(name = "id_orden")
     private Orden orden;
+
+    @ManyToOne
+    @JoinColumn(name = "id_comisionista")
+    private Comisionista comisionista;
+
 }

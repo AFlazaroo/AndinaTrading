@@ -1,10 +1,9 @@
 package com.edu.unbosque.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "mercado")
@@ -18,12 +17,12 @@ public class Mercado {
     private String nombre;
     private String zona_horario;
 
-    private LocalDateTime  horario_apertura;
-    private LocalDateTime horario_cierre;
+    @Column(name = "horario_apertura")
+    private LocalTime horario_apertura;
 
+    @Column(name = "horario_cierre")
+    private LocalTime horario_cierre;
 
-    @ManyToOne
-    @JoinColumn(name = "id_accion")
-    private Accion accion;
-
-    }
+    @OneToMany(mappedBy = "mercado", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Accion> acciones;
+}
