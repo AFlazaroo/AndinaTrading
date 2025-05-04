@@ -1,5 +1,6 @@
 package com.edu.unbosque.controller;
 
+import com.edu.unbosque.config.AppConfig;
 import com.edu.unbosque.config.TokenAdmin;
 import com.edu.unbosque.model.*;
 import com.edu.unbosque.repository.*;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -141,6 +143,13 @@ public class UsuarioController {
         }
     }
 
+    @PostMapping("/listadoUsuarios")
+    public ResponseEntity<List<Usuario>> listadoUsuario(@RequestHeader String token) {
+        String identificadorUsuario = tokenAdmin.validarTokenIdentificadorUsuario(token);
+        List<Usuario> usuarios = usuarioService.listadoGeneralUsuariosFiltro(identificadorUsuario);
+        return ResponseEntity.ok(usuarios);
+    }
+
     @PostMapping("/registroUsuario")
     public ResponseEntity<String> registroDeUsuario(@Valid @RequestBody Usuario usuario){
         Optional<Usuario> usuarioGuardado = usuarioService.guardarUsuario(usuario);
@@ -151,32 +160,4 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        String contrasena = body.get("contrasena");
-
-        if (usuarioService.validarCredenciales(email, contrasena)) {
-            Optional<Usuario> usuarioOpt = usuarioService.encontrarUsuarioCorreo(email);
-            if (usuarioOpt.isPresent()) {
-
-                String id = usuarioOpt.get().getIdUsuario().toString();
-                String token = tokenAdmin.generarToken(id);
-
-                return ResponseEntity.ok(token);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
-            }
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
-    }
-
-
-
-
-
-
-
-
 }
