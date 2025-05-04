@@ -3,6 +3,7 @@ package com.edu.unbosque.repository;
 import com.edu.unbosque.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,5 +23,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query(value = "SELECT * FROM usuario WHERE id_usuario = ?1", nativeQuery = true)
     Usuario encontrarUsuarioBasicoPorId(int id);
 
+    @Query("SELECT u FROM Usuario u WHERE u.rol = :rol")
+    List<Usuario> findByRol(@Param("rol") String rol);
 
 }
