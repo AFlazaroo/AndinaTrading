@@ -1,6 +1,7 @@
 package com.edu.unbosque.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -32,9 +33,11 @@ public class Usuario {
     private boolean estado;
     private String rol;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_portafolio")
+    @JsonManagedReference
     private Portafolio portafolio;
+
 
 
 }
