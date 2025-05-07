@@ -5,8 +5,9 @@ import com.edu.unbosque.model.Roles;
 import com.edu.unbosque.model.Usuario;
 import com.edu.unbosque.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,8 @@ public class UsuarioService {
 
     @Autowired
     private AppConfig appConfig;
+    @Autowired
+    private DataSourceAutoConfiguration dataSourceAutoConfiguration;
 
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository) {
@@ -68,6 +71,18 @@ public class UsuarioService {
     public Optional<Usuario> encontrarUsuarioCorreo(String correo) {
         return usuarioRepository.findByEmail(correo);
     }
+
+    @Transactional
+    public void actualizarCredencialesUsuario(int idUsuario, String contrasena) {
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findById(idUsuario);
+
+        if (usuarioEncontrado.isPresent()) {
+            Usuario usuario = usuarioEncontrado.get();
+            usuario.setPassword(contrasena);
+            usuarioRepository.save(usuario);
+        }
+    }
+
 
     public List<Usuario> listadoGeneralUsuariosFiltro(String usuarioLogeado) {
         Optional<Usuario> usuarioSesion = usuarioRepository.findById(Integer.valueOf(usuarioLogeado));

@@ -4,12 +4,16 @@ import com.edu.unbosque.config.AppConfig;
 import com.edu.unbosque.config.TokenAdmin;
 import com.edu.unbosque.model.*;
 import com.edu.unbosque.repository.*;
+import com.edu.unbosque.service.CorreosService;
 import com.edu.unbosque.service.UsuarioService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.Optional;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
+    private static final Logger log = LogManager.getLogger(UsuarioController.class);
     @Autowired
     private UsuarioService usuarioService;
 
@@ -40,6 +45,10 @@ public class UsuarioController {
 
     @Autowired
     private OrdenRepository ordenRepository;
+    @Autowired
+    private CorreosService correosService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     public UsuarioController(UsuarioRepository usuarioRepository) {
@@ -143,7 +152,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/listadoUsuarios")
+    @GetMapping("/listadoUsuarios")
     public ResponseEntity<List<Usuario>> listadoUsuario(@RequestHeader String token) {
         String identificadorUsuario = tokenAdmin.validarTokenIdentificadorUsuario(token);
         List<Usuario> usuarios = usuarioService.listadoGeneralUsuariosFiltro(identificadorUsuario);
@@ -159,5 +168,21 @@ public class UsuarioController {
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
+    }
+
+    @PutMapping("/editarContrasena")
+    public ResponseEntity<String> cambiarContrasena(@RequestParam String sesionUsuario,
+                                                    @RequestBody String nuevaContrasena ){
+        int idusuario  = Integer.parseInt(tokenAdmin.validarTokenIdentificadorUsuario(sesionUsuario));
+        log.info("usuario: {}", idusuario);
+        log.info("nuevaContrasena: {}", nuevaContrasena.hashCode());
+
+        if (usuarioService.existeUsuario(idusuario)){
+            log.info("si existe el usuario: {}", idusuario);
+            usuarioService.actualizarCredencialesUsuario(idusuario, nuevaContrasena);
+            return ResponseEntity.ok("Contrasena actualizada exitosamente.");
+        }
+        log.info("si no existe el usuario: {}", passwordEncoder.encode(nuevaContrasena));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
     }
 }

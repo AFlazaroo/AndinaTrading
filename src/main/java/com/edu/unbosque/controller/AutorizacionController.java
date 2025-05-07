@@ -73,6 +73,4 @@ public class AutorizacionController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Código incorrecto.");
         }
     }
-
-
 }
