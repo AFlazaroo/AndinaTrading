@@ -71,12 +71,20 @@ public class AlpacaController {
     }
 
     @GetMapping("/historical/{symbol}/{timeFrame}")
-    public ResponseEntity<?> getHistoricalData(@PathVariable String symbol, @PathVariable String timeFrame,
-                                               @RequestParam String start, @RequestParam String end) {
+    public ResponseEntity<List<Map<String, Object>>> getHistoricalData(
+            @PathVariable String symbol,
+            @PathVariable String timeFrame,
+            @RequestParam String start,
+            @RequestParam String end) {
+
         try {
-            return ResponseEntity.ok(alpacaService.getHistoricalCandles(symbol, timeFrame, start, end));
+            List<Map<String, Object>> candles = alpacaService.getHistoricalCandles(symbol, timeFrame, start, end);
+            return ResponseEntity.ok(candles);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            // Enviar un error detallado al frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    List.of(Map.of("error", "No se pudo obtener las velas: " + e.getMessage()))
+            );
         }
     }
 
@@ -174,4 +182,6 @@ public class AlpacaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error al procesar la orden.");
         }
     }
+
+
 }
