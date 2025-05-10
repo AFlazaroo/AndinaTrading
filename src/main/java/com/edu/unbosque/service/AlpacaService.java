@@ -80,13 +80,16 @@ public class AlpacaService {
     }
 
     public List<Map<String, Object>> getHistoricalCandles(String symbol, String timeframe, String start, String end) {
-        String url = MARKET_DATA_URL + "/stocks/" + symbol + "/bars?timeframe=" + timeframe + "&start=" + start + "&end=" + end;
+        String url = MARKET_DATA_URL + "/stocks/" + symbol + "/bars?timeframe=" + timeframe +
+                "&start=" + start + "&end=" + end + "&feed=iex";
+
         HttpEntity<String> entity = new HttpEntity<>(buildHeaders());
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 
         List<Map<String, Object>> result = new ArrayList<>();
         if (response.getBody() != null && response.getBody().get("bars") != null) {
             List<Map<String, Object>> bars = (List<Map<String, Object>>) response.getBody().get("bars");
+
             for (Map<String, Object> bar : bars) {
                 Map<String, Object> candle = new HashMap<>();
                 candle.put("timestamp", bar.get("t"));
@@ -97,6 +100,7 @@ public class AlpacaService {
                 result.add(candle);
             }
         }
+
         return result;
     }
 
