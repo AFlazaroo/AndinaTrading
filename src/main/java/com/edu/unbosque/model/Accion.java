@@ -1,6 +1,7 @@
 package com.edu.unbosque.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 @Entity
@@ -34,5 +35,6 @@ public class Accion {
 
     @ManyToOne
     @JoinColumn(name = "id_mercado", nullable = false)
+    @JsonIgnoreProperties("acciones")
     private Mercado mercado;
 }

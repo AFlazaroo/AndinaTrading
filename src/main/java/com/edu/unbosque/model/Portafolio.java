@@ -1,12 +1,12 @@
 package com.edu.unbosque.model;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "portafolio")
@@ -15,7 +15,8 @@ public class Portafolio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_portafolio;
+    @Column(name = "id_portafolio") // ✅ aún apunta a la columna SQL original
+    private Integer idPortafolio;
 
     private LocalDate fecha_creacion;
 
@@ -24,5 +25,9 @@ public class Portafolio {
     @JsonBackReference
     private Usuario usuario;
 
+    @OneToMany(mappedBy = "portafolio", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Holding> holdings;
 
-   }
+
+}
