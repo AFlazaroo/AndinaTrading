@@ -49,6 +49,8 @@ public class UsuarioController {
     private CorreosService correosService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private HoldingRepository holdingRepository;
 
 
     public UsuarioController(UsuarioRepository usuarioRepository) {
@@ -184,5 +186,63 @@ public class UsuarioController {
         }
         log.info("si no existe el usuario: {}", passwordEncoder.encode(nuevaContrasena));
         return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerDatosDashboard(@PathVariable int id) {
+        try {
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+            if (usuarioOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+            }
+
+            Usuario usuario = usuarioOpt.get();
+            Portafolio portafolio = usuario.getPortafolio();
+
+            if (portafolio == null) {
+                return ResponseEntity.badRequest().body("El usuario no tiene portafolio asignado.");
+            }
+
+            List<Holding> holdings = holdingRepository.findByPortafolio_IdPortafolio(portafolio.getIdPortafolio());
+
+            double valorUSD = holdings.stream()
+                    .mapToDouble(h -> h.getCantidad() * h.getPrecio_actual())
+                    .sum();
+
+            double valorCOP = valorUSD * 3850;
+
+            List<Orden> operaciones = ordenRepository.findByUsuario(usuario);
+
+            Map<String, Object> response = Map.of(
+                    "nombre", usuario.getNombre(),
+                    "apellido", usuario.getApellido(),
+                    "valorPortafolio", Map.of("usd", valorUSD, "cop", valorCOP),
+                    "holdings", holdings.stream().map(h -> Map.of(
+                            "accion", h.getAccion() != null ? h.getAccion().getTicket() : "N/A",
+                            "nombreCompania", h.getAccion() != null ? h.getAccion().getNombreCompania() : "Desconocida",
+                            "cantidad", h.getCantidad(),
+                            "precio_actual", h.getPrecio_actual(),
+                            "valor_total", h.getCantidad() * h.getPrecio_actual()
+                    )).toList(),
+                    "operaciones", operaciones.stream().map(o -> Map.of(
+                            "accion", o.getAccion() != null ? o.getAccion().getTicket() : "N/A",
+                            "tipo", o.getTipo_orden(),
+                            "fecha", o.getFecha_ejecucion()
+                    )).toList()
+            );
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // 🟠 Ver en consola cuál es la excepción exacta
+            return ResponseEntity.badRequest().body("Error interno: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/debug/holdings/{idPortafolio}")
+    public ResponseEntity<?> debugHoldings(@PathVariable Integer idPortafolio) {
+        List<Holding> holdings = holdingRepository.findByPortafolio_IdPortafolio(idPortafolio);
+        System.out.println("Holdings cargados: " + holdings.size());
+        return ResponseEntity.ok(holdings);
     }
 }

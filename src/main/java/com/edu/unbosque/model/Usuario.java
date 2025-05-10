@@ -33,11 +33,10 @@ public class Usuario {
     private boolean estado;
     private String rol;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(name = "id_portafolio")
     @JsonManagedReference
     private Portafolio portafolio;
-
 
 
 }
