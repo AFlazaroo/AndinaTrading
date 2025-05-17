@@ -183,5 +183,17 @@ public class AlpacaController {
         }
     }
 
+    @GetMapping("/operaciones-ejecutadas")
+    public ResponseEntity<?> obtenerOperacionesEjecutadas() {
+        try {
+            List<Map<String, Object>> operaciones = alpacaService.getExecutedOrdersFromAlpaca();
+            return ResponseEntity.ok(operaciones);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "No se pudieron obtener las operaciones ejecutadas: " + e.getMessage()));
+        }
+    }
+
 
 }

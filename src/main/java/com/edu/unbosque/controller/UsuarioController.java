@@ -245,4 +245,23 @@ public class UsuarioController {
         System.out.println("Holdings cargados: " + holdings.size());
         return ResponseEntity.ok(holdings);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUsuario(@RequestBody Map<String, String> loginRequest) {
+        String correo = loginRequest.get("correo");
+        String contrasena = loginRequest.get("contrasena");
+
+        boolean credencialesValidas = usuarioService.validarCredenciales(correo, contrasena);
+
+        if (credencialesValidas) {
+            Optional<Usuario> usuarioOpt = usuarioService.encontrarUsuarioCorreo(correo);
+            if (usuarioOpt.isPresent()) {
+                return ResponseEntity.ok(usuarioOpt.get().getRol()); // 🔥 Solo devuelve el rol como string
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+    }
+
+
 }
