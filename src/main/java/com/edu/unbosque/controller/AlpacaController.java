@@ -71,20 +71,12 @@ public class AlpacaController {
     }
 
     @GetMapping("/historical/{symbol}/{timeFrame}")
-    public ResponseEntity<List<Map<String, Object>>> getHistoricalData(
-            @PathVariable String symbol,
-            @PathVariable String timeFrame,
-            @RequestParam String start,
-            @RequestParam String end) {
-
+    public ResponseEntity<?> getHistoricalData(@PathVariable String symbol, @PathVariable String timeFrame,
+                                               @RequestParam String start, @RequestParam String end) {
         try {
-            List<Map<String, Object>> candles = alpacaService.getHistoricalCandles(symbol, timeFrame, start, end);
-            return ResponseEntity.ok(candles);
+            return ResponseEntity.ok(alpacaService.getHistoricalCandles(symbol, timeFrame, start, end));
         } catch (Exception e) {
-            // Enviar un error detallado al frontend
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    List.of(Map.of("error", "No se pudo obtener las velas: " + e.getMessage()))
-            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 
@@ -180,6 +172,28 @@ public class AlpacaController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Error al procesar la orden.");
+        }
+    }
+
+    //Endpoint para traer todas las ordenes desde la api de alpaca
+    @GetMapping("/ordenes-ejecutadas")
+    public ResponseEntity<List<Map<String, Object>>> getOrdenesEjecutadas() {
+        try {
+            List<Map<String, Object>> ordenes = alpacaService.getOrdenesEjecutadas();
+            return ResponseEntity.ok(ordenes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    //Endpoint para traer todos los holdings de alpaca
+    @GetMapping("/ordenes-pendientes")
+    public ResponseEntity<List<Map<String, Object>>> getOrdenesPendientes() {
+        try {
+            List<Map<String, Object>> ordenes = alpacaService.getOrdenesPendientes();
+            return ResponseEntity.ok(ordenes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
