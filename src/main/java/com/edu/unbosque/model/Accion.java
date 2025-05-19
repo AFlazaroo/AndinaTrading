@@ -11,8 +11,6 @@ public class Accion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-
     private Integer id_accion;
 
     @Column(name = "ticket")

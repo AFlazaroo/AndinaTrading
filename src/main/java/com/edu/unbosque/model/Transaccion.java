@@ -16,7 +16,6 @@ public class Transaccion {
 
 
     private Integer id_transaccion;
-
     private Double comision_comisionista;
     private Double comision_sistema;
     private Double monto;

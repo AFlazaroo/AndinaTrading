@@ -71,7 +71,7 @@ public class ComisionistaController {
             }
 
             // Busca la acción por su símbolo (ticket)
-            Accion accion = accionRepository.findByTicket(symbol)
+            Accion accion = accionRepository.findFirstByTicket(symbol)
                     .orElseThrow(() -> new RuntimeException("Acción no encontrada con ticket: " + symbol));
 
             // Obtiene el precio actual de la acción
