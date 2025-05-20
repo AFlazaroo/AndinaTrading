@@ -245,11 +245,13 @@ public class AlpacaService {
     }
 
     public String convertirZonaAHorariaJava(String zona) {
-        if (zona.equals("Hora del Este de EE. UU.")) return "America/New_York";
-        if (zona.equals("Hora de Greenwich")) return "Europe/London";
-        if (zona.equals("Hora de Japón")) return "Asia/Tokyo";
-        if (zona.equals("Hora de Sídney")) return "Australia/Sydney";
-        throw new IllegalArgumentException("Zona horaria no soportada: " + zona);
+        return switch (zona) {
+            case "GMT-5" -> "America/New_York";
+            case "Hora de Greenwich" -> "Europe/London";
+            case "Hora de Japón" -> "Asia/Tokyo";
+            case "Hora de Sídney" -> "Australia/Sydney";
+            default -> throw new IllegalArgumentException("Zona horaria no soportada: " + zona);
+        };
     }
 
     public List<Map<String, Object>> getOrdenesEjecutadas() {
