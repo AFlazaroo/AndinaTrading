@@ -254,6 +254,61 @@ public class AlpacaService {
         };
     }
 
+    public List<Map<String, Object>> getOrdenesEjecutadas() {
+        String url = BASE_URL + "/orders?status=filled";
+        HttpEntity<String> entity = new HttpEntity<>(buildHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            for (JsonNode node : root) {
+                Map<String, Object> orden = new HashMap<>();
+                orden.put("accion", node.get("symbol").asText());
+                orden.put("tipo", node.get("type").asText());
+                orden.put("fecha", node.get("filled_at").asText());
+                result.add(orden);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public List<Map<String, Object>> getOrdenesPendientes() {
+        String url = BASE_URL + "/orders?status=open";
+        HttpEntity<String> entity = new HttpEntity<>(buildHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            for (JsonNode node : root) {
+                Map<String, Object> orden = new HashMap<>();
+                orden.put("accion", node.get("symbol").asText());
+                orden.put("cantidad", node.get("qty").asInt());
+                orden.put("precio", node.get("limit_price") != null && !node.get("limit_price").isNull()
+                        ? node.get("limit_price").asDouble()
+                        : null);
+                orden.put("valor", node.get("notional") != null && !node.get("notional").isNull()
+                        ? node.get("notional").asDouble()
+                        : null);
+                orden.put("estado", node.get("status").asText());
+                orden.put("tipo", node.get("type").asText());
+                result.add(orden);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     public List<Map<String, Object>> getExecutedOrdersFromAlpaca() {
         String url = BASE_URL + "/orders?status=all&nested=true"; // trae todas las órdenes, incluidas ejecutadas
 
