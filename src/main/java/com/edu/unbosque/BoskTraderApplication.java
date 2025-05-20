@@ -8,6 +8,7 @@ public class BoskTraderApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BoskTraderApplication.class, args);
+
 	}
 
 }

@@ -175,7 +175,7 @@ public class AlpacaController {
         }
     }
 
-    //Endpoint para traer todas las ordenes desde la api de alpaca
+    // Endpoint para traer todas las órdenes ejecutadas desde Alpaca
     @GetMapping("/ordenes-ejecutadas")
     public ResponseEntity<List<Map<String, Object>>> getOrdenesEjecutadas() {
         try {
@@ -186,7 +186,7 @@ public class AlpacaController {
         }
     }
 
-    //Endpoint para traer todos los holdings de alpaca
+    // Endpoint para traer todas las órdenes pendientes desde Alpaca
     @GetMapping("/ordenes-pendientes")
     public ResponseEntity<List<Map<String, Object>>> getOrdenesPendientes() {
         try {
@@ -194,6 +194,22 @@ public class AlpacaController {
             return ResponseEntity.ok(ordenes);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // Endpoint adicional para obtener operaciones ejecutadas desde Alpaca
+    @GetMapping("/operaciones-ejecutadas")
+    public ResponseEntity<?> obtenerOperacionesEjecutadas() {
+        try {
+            List<Map<String, Object>> operaciones = alpacaService.getExecutedOrdersFromAlpaca();
+            return ResponseEntity.ok(operaciones);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "No se pudieron obtener las operaciones ejecutadas: " + e.getMessage()));
+        }
+    }
+
         }
     }
 

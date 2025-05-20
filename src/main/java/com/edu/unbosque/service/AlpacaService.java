@@ -307,7 +307,43 @@ public class AlpacaService {
         return result;
     }
 
+    public List<Map<String, Object>> getExecutedOrdersFromAlpaca() {
+        String url = BASE_URL + "/orders?status=all&nested=true"; // trae todas las órdenes, incluidas ejecutadas
 
+        HttpEntity<String> entity = new HttpEntity<>(buildHeaders());
+        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
 
+        List<Map<String, Object>> allOrders = response.getBody();
 
+        // Filtramos y transformamos para devolver solo la info relevante
+        return allOrders.stream()
+                .filter(order -> order.get("filled_at") != null)
+                .map(order -> {
+                    String symbol = order.get("symbol") != null ? order.get("symbol").toString() : "N/A";
+
+                    return Map.of(
+                            "symbol", symbol,
+                            "order_type", order.get("type"),
+                            "side", order.get("side"),
+                            "qty", order.get("qty"),
+                            "filled_qty", order.get("filled_qty"),
+                            "avg_fill_price", order.get("filled_avg_price"),
+                            "filled_at", order.get("filled_at"),
+                            "valor_total", calculateValorTotal(order)
+                    );
+                })
+                .toList();
+    }
+
+    // Método auxiliar para calcular el valor total
+    private double calculateValorTotal(Map<String, Object> order) {
+        try {
+            double qty = Double.parseDouble(order.get("filled_qty").toString());
+            double price = Double.parseDouble(order.get("filled_avg_price").toString());
+            return qty * price;
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
 }
+
