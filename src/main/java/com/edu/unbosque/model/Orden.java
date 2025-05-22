@@ -2,13 +2,17 @@ package com.edu.unbosque.model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orden")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Orden {
 
     @Id
@@ -36,6 +40,5 @@ public class Orden {
     @OneToOne
     @JoinColumn(name = "id_transaccion")
     private Transaccion transaccion;
-
 
 }

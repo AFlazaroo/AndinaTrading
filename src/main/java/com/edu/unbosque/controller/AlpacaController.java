@@ -123,7 +123,7 @@ public class AlpacaController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
             }
 
-            Accion accion = accionRepository.findByTicket(symbol)
+            Accion accion = accionRepository.findFirstByTicket(symbol)
                     .orElseThrow(() -> new RuntimeException("Acción no encontrada con ticket: " + symbol));
 
             Mercado mercado = accion.getMercado();
@@ -210,6 +210,7 @@ public class AlpacaController {
         }
     }
 
+
     @GetMapping("/resumen-portafolio")
     public ResponseEntity<List<Map<String, Object>>> getResumenPortafolio() {
         try {
@@ -217,6 +218,12 @@ public class AlpacaController {
             return ResponseEntity.ok(resumen);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+      
+    @GetMapping("/HoldingsActivos")
+    public ResponseEntity<?> obtenerHoldings(){
+        return ResponseEntity.ok(alpacaService.getOpenPositions());
+
         }
     }
 

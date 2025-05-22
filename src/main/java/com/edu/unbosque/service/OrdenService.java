@@ -69,6 +69,27 @@ public class OrdenService {
         return response.getBody();
     }
 
+    public String placeMarketOrder(String symbol, int qty, String side , String time) {
+        String url = BASE_URL + "/orders";
+
+
+        String body = "{"
+                + "\"symbol\":\"" + symbol + "\","
+                + "\"qty\":" + qty + ","
+                + "\"side\":\"" + side + "\","
+                + "\"type\":\"market\","
+                + "\"time_in_force\":\"" + time + "\""
+                + "}";
+
+        HttpHeaders headers = buildHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        return response.getBody();
+    }
+
     /**
      * Coloca una orden límite (se ejecuta solo al precio especificado o mejor)
      * @param symbol Símbolo del activo

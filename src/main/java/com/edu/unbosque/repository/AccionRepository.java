@@ -11,9 +11,7 @@ import java.util.Optional;
 @Repository
 public interface AccionRepository extends JpaRepository<Accion, Integer> {
 
-    // Buscar por ticket (ej: AAPL, MSFT)
-    Optional<Accion> findByTicket(String ticket);
+    Optional<Accion> findFirstByTicket(String ticket);
 
-    // Buscar por nombre de la compañía
     List<Accion> findByNombreCompaniaContainingIgnoreCase(String nombre);
 }
