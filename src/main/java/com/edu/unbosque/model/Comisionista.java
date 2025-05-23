@@ -2,11 +2,15 @@ package com.edu.unbosque.model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "comisionista")
+@Table(name = "Comisionista")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comisionista {
 
     @Id
@@ -14,10 +18,22 @@ public class Comisionista {
     @Column(name = "id_comisionista")
     private Integer idComisionista;
 
+    @Column(name = "nombre")
     private String nombre;
+
+    @Column(name = "apellido")
     private String apellido;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "telefono")
     private String telefono;
+
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "estado")
     private boolean estado;
+
 }

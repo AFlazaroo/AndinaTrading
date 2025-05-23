@@ -1,6 +1,7 @@
 package com.edu.unbosque.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class Portafolio {
 
     @OneToMany(mappedBy = "portafolio", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
+    @JsonIgnore
     private List<Holding> holdings;
 
 

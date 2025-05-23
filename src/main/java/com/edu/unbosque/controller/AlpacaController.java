@@ -221,8 +221,10 @@ public class AlpacaController {
     }
       
     @GetMapping("/HoldingsActivos")
-    public ResponseEntity<?> obtenerHoldings(){
+    public ResponseEntity<?> obtenerHoldings() {
         return ResponseEntity.ok(alpacaService.getOpenPositions());
+    }
+
 
         }
     }
@@ -246,8 +248,5 @@ public class AlpacaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
-
 }
 
