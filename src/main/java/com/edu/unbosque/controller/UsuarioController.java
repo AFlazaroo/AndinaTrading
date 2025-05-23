@@ -270,5 +270,22 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UsuarioAsociadoCorrectamente");
     }
 
+    @GetMapping("/by-email/{correo}")
+    public ResponseEntity<?> obtenerUsuarioPorCorreo(@PathVariable String correo) {
+        Optional<Usuario> usuarioOpt = usuarioService.encontrarUsuarioCorreo(correo);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        Map<String, Object> response = Map.of(
+                "id", usuario.getIdUsuario(),
+                "nombre", usuario.getNombre(),
+                "apellido", usuario.getApellido(),
+                "rol", usuario.getRol()
+        );
+
+        return ResponseEntity.ok(response);
+    }
 
 }

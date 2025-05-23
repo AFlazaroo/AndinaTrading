@@ -113,7 +113,7 @@ public class AlpacaController {
         }
     }
 
-    // Endpoint para orden tipo MARKET
+    // === 5. Crear Orden de Mercado ===
     @PostMapping("/order/market")
     public ResponseEntity<?> placeMarketOrder(@RequestParam String symbol, @RequestParam int qty,
                                               @RequestParam String side, @RequestParam Integer idUsuario) {
@@ -175,7 +175,8 @@ public class AlpacaController {
         }
     }
 
-    // Endpoint para traer todas las órdenes ejecutadas desde Alpaca
+    // === 6. Consultas Adicionales ===
+
     @GetMapping("/ordenes-ejecutadas")
     public ResponseEntity<List<Map<String, Object>>> getOrdenesEjecutadas() {
         try {
@@ -186,7 +187,6 @@ public class AlpacaController {
         }
     }
 
-    // Endpoint para traer todas las órdenes pendientes desde Alpaca
     @GetMapping("/ordenes-pendientes")
     public ResponseEntity<List<Map<String, Object>>> getOrdenesPendientes() {
         try {
@@ -197,7 +197,6 @@ public class AlpacaController {
         }
     }
 
-    // Endpoint adicional para obtener operaciones ejecutadas desde Alpaca
     @GetMapping("/operaciones-ejecutadas")
     public ResponseEntity<?> obtenerOperacionesEjecutadas() {
         try {
@@ -210,7 +209,6 @@ public class AlpacaController {
         }
     }
 
-
     @GetMapping("/resumen-portafolio")
     public ResponseEntity<List<Map<String, Object>>> getResumenPortafolio() {
         try {
@@ -218,15 +216,12 @@ public class AlpacaController {
             return ResponseEntity.ok(resumen);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-      
+
     @GetMapping("/HoldingsActivos")
     public ResponseEntity<?> obtenerHoldings() {
         return ResponseEntity.ok(alpacaService.getOpenPositions());
-    }
-
-
-        }
     }
 
     @GetMapping("/portafolio/distribucion")
@@ -248,5 +243,10 @@ public class AlpacaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-}
 
+    @GetMapping("/portfolio-snapshot")
+    public ResponseEntity<Map<String, Object>> getPortfolioSnapshot() {
+        Map<String, Object> snapshot = alpacaService.getPortfolioSnapshot();
+        return ResponseEntity.ok(snapshot);
+    }
+}
