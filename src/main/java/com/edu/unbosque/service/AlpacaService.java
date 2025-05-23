@@ -447,5 +447,41 @@ public class AlpacaService {
         return resultado;
     }
 
+    public Map<String, Object> getPortfolioSnapshot() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 1. Obtener balance
+            String balanceJson = getAccountBalance();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(balanceJson);
+
+            double equity = node.path("equity").asDouble();
+            double cash = node.path("cash").asDouble();
+            double buyingPower = node.path("buying_power").asDouble();
+
+            result.put("equity", equity);
+            result.put("cash", cash);
+            result.put("buying_power", buyingPower);
+
+            // 2. Obtener datos de AAPL como referencia de comportamiento diario (puedes cambiar por portafolio real si usas PnL)
+            String today = java.time.LocalDate.now().toString();
+            List<Map<String, Object>> candles = getHistoricalCandles("AAPL", "1D", today + "T00:00:00Z", today + "T23:59:59Z");
+
+            result.put("historical_equity", candles);
+
+            // 3. Cambio diario aproximado (solo si hay al menos 2 puntos)
+            if (candles.size() > 1) {
+                double open = (double) candles.get(0).get("open");
+                double close = (double) candles.get(candles.size() - 1).get("close");
+                result.put("daily_change", close - open);
+            } else {
+                result.put("daily_change", 0);
+            }
+        } catch (Exception e) {
+            result.put("error", "Error al generar el snapshot: " + e.getMessage());
+        }
+        return result;
+    }
+
 }
 
