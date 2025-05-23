@@ -210,8 +210,43 @@ public class AlpacaController {
         }
     }
 
+
+    @GetMapping("/resumen-portafolio")
+    public ResponseEntity<List<Map<String, Object>>> getResumenPortafolio() {
+        try {
+            List<Map<String, Object>> resumen = alpacaService.getResumenPortafolio();
+            return ResponseEntity.ok(resumen);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+      
     @GetMapping("/HoldingsActivos")
     public ResponseEntity<?> obtenerHoldings() {
         return ResponseEntity.ok(alpacaService.getOpenPositions());
     }
+
+
+        }
+    }
+
+    @GetMapping("/portafolio/distribucion")
+    public ResponseEntity<List<Map<String, Object>>> getDistribucionPortafolio() {
+        try {
+            List<Map<String, Object>> distribucion = alpacaService.getDistribucionPortafolio();
+            return ResponseEntity.ok(distribucion);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/ordenes/por-tipo")
+    public ResponseEntity<List<Map<String, Object>>> getOrdenesPorTipo() {
+        try {
+            List<Map<String, Object>> datos = alpacaService.getConteoOrdenesPorTipo();
+            return ResponseEntity.ok(datos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
+

@@ -347,5 +347,105 @@ public class AlpacaService {
             return 0.0;
         }
     }
+
+    public List<Map<String, Object>> getResumenPortafolio() {
+        String url = BASE_URL + "/positions";
+        HttpEntity<String> entity = new HttpEntity<>(buildHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        List<Map<String, Object>> resultado = new ArrayList<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            for (JsonNode node : root) {
+                Map<String, Object> resumen = new HashMap<>();
+
+                resumen.put("accion", node.get("symbol").asText());
+                resumen.put("cantidad", node.get("qty").asInt());
+                resumen.put("precio_promedio", node.get("avg_entry_price").asDouble());
+                resumen.put("valor_actual", node.get("market_value").asDouble());
+                resumen.put("porcentaje_ganancia", node.get("unrealized_plpc").asDouble() * 100); // % ganancia
+
+                resultado.add(resumen);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public List<Map<String, Object>> getDistribucionPortafolio() {
+        String url = BASE_URL + "/positions";
+        HttpEntity<String> entity = new HttpEntity<>(buildHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        List<Map<String, Object>> resultado = new ArrayList<>();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            double valorTotal = 0.0;
+            Map<String, Double> valoresPorAccion = new HashMap<>();
+
+            // 1. Sumar valor total y agrupar por símbolo
+            for (JsonNode node : root) {
+                String symbol = node.get("symbol").asText();
+                double marketValue = node.get("market_value").asDouble();
+
+                valoresPorAccion.put(symbol, marketValue);
+                valorTotal += marketValue;
+            }
+
+            // 2. Calcular porcentaje por acción
+            for (Map.Entry<String, Double> entry : valoresPorAccion.entrySet()) {
+                Map<String, Object> fila = new HashMap<>();
+                fila.put("accion", entry.getKey());
+                fila.put("porcentaje", Math.round((entry.getValue() / valorTotal) * 10000.0) / 100.0); // redondear a 2 decimales
+                resultado.add(fila);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public List<Map<String, Object>> getConteoOrdenesPorTipo() {
+        String url = BASE_URL + "/orders?status=all";
+        HttpEntity<String> entity = new HttpEntity<>(buildHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        List<Map<String, Object>> resultado = new ArrayList<>();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            Map<String, Integer> conteoPorTipo = new HashMap<>();
+
+            for (JsonNode order : root) {
+                String tipo = order.get("type").asText();
+                conteoPorTipo.put(tipo, conteoPorTipo.getOrDefault(tipo, 0) + 1);
+            }
+
+            for (Map.Entry<String, Integer> entry : conteoPorTipo.entrySet()) {
+                Map<String, Object> tipoOrden = new HashMap<>();
+                tipoOrden.put("tipo", entry.getKey());
+                tipoOrden.put("cantidad", entry.getValue());
+                resultado.add(tipoOrden);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
 }
 
