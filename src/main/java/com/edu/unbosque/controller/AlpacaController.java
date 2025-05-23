@@ -211,10 +211,7 @@ public class AlpacaController {
     }
 
     @GetMapping("/HoldingsActivos")
-    public ResponseEntity<?> obtenerHoldings(){
+    public ResponseEntity<?> obtenerHoldings() {
         return ResponseEntity.ok(alpacaService.getOpenPositions());
-        }
     }
-
-
 }

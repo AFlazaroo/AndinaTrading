@@ -1,8 +1,11 @@
 package com.edu.unbosque.service;
 
 import com.edu.unbosque.config.AppConfig;
+import com.edu.unbosque.model.Comisionista;
 import com.edu.unbosque.model.Roles;
 import com.edu.unbosque.model.Usuario;
+import com.edu.unbosque.model.Usuario_Comisionista;
+import com.edu.unbosque.repository.UsuarioComisionistaRepository;
 import com.edu.unbosque.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -17,6 +20,8 @@ public class UsuarioService {
 
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioComisionistaRepository usuarioComisionistaRepository;
+
 
     @Autowired
     private AppConfig appConfig;
@@ -24,8 +29,9 @@ public class UsuarioService {
     private DataSourceAutoConfiguration dataSourceAutoConfiguration;
 
     @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioComisionistaRepository usuarioComisionistaRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioComisionistaRepository = usuarioComisionistaRepository;
     }
 
     public boolean existeUsuario(int id) {
@@ -84,8 +90,8 @@ public class UsuarioService {
     }
 
 
-    public List<Usuario> listadoGeneralUsuariosFiltro(String usuarioLogeado) {
-        Optional<Usuario> usuarioSesion = usuarioRepository.findById(Integer.valueOf(usuarioLogeado));
+    public List<Usuario> listadoGeneralUsuariosFiltro(int idUsuarioLogeado) {
+        Optional<Usuario> usuarioSesion = usuarioRepository.findById(idUsuarioLogeado);
         String rol = usuarioSesion.get().getRol();
         return switch (rol) {
             case "Administrador" -> usuarioRepository.findAll();
@@ -93,5 +99,21 @@ public class UsuarioService {
             case "Comisionista" -> usuarioRepository.findByRol("Trader");
             default -> List.of();
         };
+    }
+
+    public boolean asociarUsuarioComisionista(int idComisionistaSeleccionado, int idUsuarioLogeado) {
+        Optional<Usuario> idComisionista = usuarioRepository.findById(idComisionistaSeleccionado);
+        Optional<Usuario> idUsuarioLoge = usuarioRepository.findById(idUsuarioLogeado);
+        Comisionista comisionista = new Comisionista();
+        comisionista.setNombre(idComisionista.get().getNombre());
+        comisionista.setApellido(idComisionista.get().getApellido());
+        comisionista.setEmail(idComisionista.get().getEmail());
+        comisionista.setTelefono(idComisionista.get().getTelefono());
+        comisionista.setPassword(idComisionista.get().getPassword());
+        comisionista.setEstado(true);
+
+        Usuario_Comisionista usuarioComisionista = new Usuario_Comisionista(idUsuarioLoge.get(), comisionista);
+        usuarioComisionistaRepository.save(usuarioComisionista);
+        return true;
     }
 }

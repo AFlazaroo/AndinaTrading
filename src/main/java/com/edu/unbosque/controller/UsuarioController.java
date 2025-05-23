@@ -155,9 +155,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/listadoUsuarios")
-    public ResponseEntity<List<Usuario>> listadoUsuario(@RequestHeader String token) {
-        String identificadorUsuario = tokenAdmin.validarTokenIdentificadorUsuario(token);
-        List<Usuario> usuarios = usuarioService.listadoGeneralUsuariosFiltro(identificadorUsuario);
+    public ResponseEntity<List<Usuario>> listadoUsuario(@RequestParam int idUsuarioLogeado) {
+        List<Usuario> usuarios = usuarioService.listadoGeneralUsuariosFiltro(idUsuarioLogeado);
         return ResponseEntity.ok(usuarios);
     }
 
@@ -261,6 +260,14 @@ public class UsuarioController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+    }
+
+    @PostMapping("/asociarComisionista")
+    public ResponseEntity<?> AsociarComisionista(@RequestParam int idComisionistaSeleccionado ,
+                                                 @RequestParam int idUsuarioLogeado) {
+        usuarioService.asociarUsuarioComisionista(idComisionistaSeleccionado,idUsuarioLogeado);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UsuarioAsociadoCorrectamente");
     }
 
 
