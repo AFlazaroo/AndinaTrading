@@ -1,0 +1,42 @@
+server:
+  port: 8099
+
+spring:
+  application:
+    name: microservice-usuario
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bosktrader?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 12345678
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: andrescuta2013@gmail.com
+    password: bikaphccozavyxkl
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+eureka:
+  hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  secret: f0d9f92e-481f
