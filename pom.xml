@@ -32,12 +32,20 @@
 		<module>microservice-portafolio</module>
 		<module>microservice-consolidacion</module>
 		<module>microservice-reporte</module>
-
+        <module>microservice-ibkr-adapter</module>
 	</modules>
+
 	<properties>
 		<java.version>17</java.version>
-		<spring-cloud.version>2025.0.0</spring-cloud.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
 	</properties>
+
+    <repositories>
+        <repository>
+            <id>ibkr-maven-repo</id>
+            <url>https://interactivebrokers.github.io/tws-api/maven_repository</url>
+        </repository>
+    </repositories>
 
 	<dependencies>
 		<!-- Spring Boot starters -->

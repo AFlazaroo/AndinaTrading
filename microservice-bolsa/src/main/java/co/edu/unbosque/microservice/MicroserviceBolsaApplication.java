@@ -2,12 +2,16 @@ package co.edu.unbosque.microservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-@enableEurekaClient
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
 @SpringBootApplication
+@EnableDiscoveryClient // ✅ Anotación corregida y actualizada
+@EnableFeignClients    // ✅ Habilita el uso de Feign para llamar a otros microservicios
 public class MicroserviceBolsaApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MicroserviceBolsaApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MicroserviceBolsaApplication.class, args);
+    }
 
 }

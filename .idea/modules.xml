@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/AndinaTrading_DEV.iml" filepath="$PROJECT_DIR$/.idea/AndinaTrading_DEV.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-gateway/src/main/main.iml" filepath="$PROJECT_DIR$/microservice-gateway/src/main/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-orden/src/main/main10.iml" filepath="$PROJECT_DIR$/microservice-orden/src/main/main10.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-eureka/src/main/main11.iml" filepath="$PROJECT_DIR$/microservice-eureka/src/main/main11.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-contrato/src/main/main12.iml" filepath="$PROJECT_DIR$/microservice-contrato/src/main/main12.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-bolsa/src/main/main2.iml" filepath="$PROJECT_DIR$/microservice-bolsa/src/main/main2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-consolidacion/src/main/main3.iml" filepath="$PROJECT_DIR$/microservice-consolidacion/src/main/main3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-transaccion/src/main/main4.iml" filepath="$PROJECT_DIR$/microservice-transaccion/src/main/main4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-empresa/src/main/main5.iml" filepath="$PROJECT_DIR$/microservice-empresa/src/main/main5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-config/src/main/main6.iml" filepath="$PROJECT_DIR$/microservice-config/src/main/main6.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-portafolio/src/main/main7.iml" filepath="$PROJECT_DIR$/microservice-portafolio/src/main/main7.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-usuario/src/main/main8.iml" filepath="$PROJECT_DIR$/microservice-usuario/src/main/main8.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-reporte/src/main/main9.iml" filepath="$PROJECT_DIR$/microservice-reporte/src/main/main9.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-empresa/src/test/test.iml" filepath="$PROJECT_DIR$/microservice-empresa/src/test/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-config/src/test/test10.iml" filepath="$PROJECT_DIR$/microservice-config/src/test/test10.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-orden/src/test/test11.iml" filepath="$PROJECT_DIR$/microservice-orden/src/test/test11.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-bolsa/src/test/test12.iml" filepath="$PROJECT_DIR$/microservice-bolsa/src/test/test12.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-portafolio/src/test/test2.iml" filepath="$PROJECT_DIR$/microservice-portafolio/src/test/test2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-consolidacion/src/test/test3.iml" filepath="$PROJECT_DIR$/microservice-consolidacion/src/test/test3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-transaccion/src/test/test4.iml" filepath="$PROJECT_DIR$/microservice-transaccion/src/test/test4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-usuario/src/test/test5.iml" filepath="$PROJECT_DIR$/microservice-usuario/src/test/test5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-gateway/src/test/test6.iml" filepath="$PROJECT_DIR$/microservice-gateway/src/test/test6.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-reporte/src/test/test7.iml" filepath="$PROJECT_DIR$/microservice-reporte/src/test/test7.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-contrato/src/test/test8.iml" filepath="$PROJECT_DIR$/microservice-contrato/src/test/test8.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-eureka/src/test/test9.iml" filepath="$PROJECT_DIR$/microservice-eureka/src/test/test9.iml" />
+    </modules>
+  </component>
+</project>
